@@ -31,7 +31,7 @@
             '    user-select: none !important;' +
             '    z-index: 0 !important;' +
             '    opacity: 0;' +
-            '    background-color: #000000 !important;' +
+            '    background-color: transparent !important;' +
             '    transition: opacity 0.8s ease-in-out !important;' +
             '}' +
             '.cinematic-trailer-layer.is-visible {' +
@@ -372,11 +372,33 @@
             } catch (e) {}
         }
 
+        var hasStarted = false;
         var hasEnded = false;
+        var loadTimeout = null;
+
+        function revealTrailer() {
+            if (hasStarted || hasEnded) return;
+            hasStarted = true;
+            if (loadTimeout) {
+                clearTimeout(loadTimeout);
+                loadTimeout = null;
+            }
+            layer.addClass('is-visible');
+            if (bg && bg.length) {
+                bg.addClass('trailer-running');
+            }
+            if (soundBtn) {
+                soundBtn.css('display', '');
+            }
+        }
 
         function endTrailer() {
             if (hasEnded) return;
             hasEnded = true;
+            if (loadTimeout) {
+                clearTimeout(loadTimeout);
+                loadTimeout = null;
+            }
 
             // Плавное возвращение к оригинальному постеру (кинематографичный fade-out)
             layer.removeClass('is-visible');
@@ -394,7 +416,7 @@
             }, 1200);
         }
 
-        // Подключаем handshake с YouTube IFrame API
+        // Подключаем handshake с YouTube IFrame API и команду на воспроизведение
         if (iframeEl) {
             iframeEl.onload = function () {
                 try {
@@ -402,16 +424,23 @@
                         iframeEl.contentWindow.postMessage(JSON.stringify({
                             event: 'listening'
                         }), '*');
+                        sendYTCommand('playVideo');
                     }
                 } catch (e) {}
             };
         }
 
-        // Слушатель завершения воспроизведения трейлера
+        // Слушатель событий плеера YouTube
         var onMessage = function (event) {
             try {
                 var data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
                 if (!data) return;
+
+                // Ошибка видео или запрет встраивания правообладателем — возвращаем стандартный постер
+                if (data.event === 'onError' || (data.info && data.info.error)) {
+                    endTrailer();
+                    return;
+                }
 
                 var state = null;
                 if (data.event === 'infoDelivery' && data.info && data.info.playerState !== undefined) {
@@ -420,8 +449,16 @@
                     state = data.info;
                 }
 
+                // 1 = YT.PlayerState.PLAYING (видео реально пошло!)
+                if (state === 1) {
+                    revealTrailer();
+                }
+                // 2 = YT.PlayerState.PAUSED (плеер встал на паузу — немедленно возобновляем показ и прячем значок ||)
+                else if (state === 2) {
+                    sendYTCommand('playVideo');
+                }
                 // 0 = YT.PlayerState.ENDED (трейлер закончился)
-                if (state === 0) {
+                else if (state === 0) {
                     endTrailer();
                 }
             } catch (err) {}
@@ -443,7 +480,7 @@
             }
         }
 
-        // Кнопка звука в ряду действий
+        // Кнопка звука в ряду действий (изначально скрыта, пока видео не пошло)
         var soundBtn = null;
         var buttonsContainer = dom.find('.full-start__buttons, .full-start-new__buttons');
         if (!buttonsContainer.length) {
@@ -465,7 +502,7 @@
             buttonsContainer.find('.button--sound').remove();
 
             soundBtn = $('' +
-                '<div class="full-start__button selector button--sound">' +
+                '<div class="full-start__button selector button--sound" style="display: none;">' +
                 '    ' + ICON_MUTED +
                 '</div>'
             );
@@ -497,16 +534,16 @@
             }
         }
 
-        var timer = setTimeout(function () {
-            layer.addClass('is-visible');
-            if (bg && bg.length) {
-                bg.addClass('trailer-running');
+        // Таймаут безопасности: если за 12 секунд видео не загрузилось из-за слабого интернета — оставляем стандартный постер
+        loadTimeout = setTimeout(function () {
+            if (!hasStarted) {
+                endTrailer();
             }
-        }, 800);
+        }, 12000);
 
         var clean = function (e) {
             if (e.type === 'destroy' || e.type === 'back') {
-                clearTimeout(timer);
+                if (loadTimeout) clearTimeout(loadTimeout);
                 window.removeEventListener('message', onMessage);
                 $('body').removeClass('cinematic-trailer-active');
                 if (soundBtn) soundBtn.remove();
