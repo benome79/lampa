@@ -8,7 +8,7 @@
         return window.$ || (window.Lampa && window.Lampa.$);
     }
 
-    // 1. Стили видеофона и звукового пульта
+    // 1. Стили видеофона и круглой кнопки звука в едином стиле Lampa
     function injectStyles() {
         if (document.getElementById(CSS_ID)) return;
 
@@ -36,7 +36,6 @@
             '.cinematic-trailer-layer.is-visible {' +
             '    opacity: 1 !important;' +
             '}' +
-            '/* Зум для скрытия рамок 21:9 */' +
             '.cinematic-trailer-layer iframe {' +
             '    position: absolute !important;' +
             '    top: 50% !important;' +
@@ -49,7 +48,6 @@
             '    transform: translate(-50%, -50%) scale(1.18) !important;' +
             '    border: none !important;' +
             '}' +
-            '/* Градиент затемнения */' +
             '.cinematic-trailer-overlay {' +
             '    position: absolute !important;' +
             '    top: 0 !important;' +
@@ -67,44 +65,16 @@
             '    opacity: 0 !important;' +
             '    transition: opacity 0.8s ease-in-out !important;' +
             '}' +
-            '/* Кнопка в ряду действий */' +
-            '.cinematic-sound-btn {' +
+            '/* Круглая кнопка звука в точности под дизайн остальных кнопок Lampa */' +
+            '.button--sound {' +
             '    display: inline-flex !important;' +
             '    align-items: center !important;' +
-            '    margin-left: 0.5em !important;' +
-            '    border-radius: 12px !important;' +
+            '    justify-content: center !important;' +
             '    cursor: pointer !important;' +
             '}' +
-            '/* Плавающий пульт звука в правом нижнем углу */' +
-            '.cinematic-sound-remote {' +
-            '    position: fixed !important;' +
-            '    right: 2.5em !important;' +
-            '    bottom: 2em !important;' +
-            '    display: -webkit-box !important;' +
-            '    display: -webkit-flex !important;' +
-            '    display: flex !important;' +
-            '    align-items: center !important;' +
-            '    padding: 0.6em 1.2em !important;' +
-            '    background: rgba(0, 0, 0, 0.75) !important;' +
-            '    border: 1px solid rgba(255, 255, 255, 0.25) !important;' +
-            '    border-radius: 30px !important;' +
-            '    color: #ffffff !important;' +
-            '    font-size: 1.1em !important;' +
-            '    font-weight: 500 !important;' +
-            '    z-index: 99 !important;' +
-            '    cursor: pointer !important;' +
-            '    box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;' +
-            '    transition: transform 0.2s ease, background 0.2s ease !important;' +
-            '}' +
-            '.cinematic-sound-remote.focus, .cinematic-sound-remote:hover {' +
-            '    background: #ffffff !important;' +
-            '    color: #000000 !important;' +
-            '    transform: scale(1.08) !important;' +
-            '}' +
-            '.cinematic-sound-remote svg, .cinematic-sound-btn svg {' +
+            '.button--sound svg {' +
             '    width: 1.4em !important;' +
             '    height: 1.4em !important;' +
-            '    margin-right: 0.4em !important;' +
             '    fill: currentColor !important;' +
             '}';
 
@@ -207,44 +177,46 @@
                 sendYTCommand('unMute');
                 sendYTCommand('setVolume', [100]);
                 isMuted = false;
-                if (remoteBadge) remoteBadge.html(ICON_UNMUTED + '<span>Вимкнути звук</span>');
-                if (soundBtn) soundBtn.html(ICON_UNMUTED + '<span>Звук: увімк</span>');
+                if (soundBtn) soundBtn.html(ICON_UNMUTED);
                 if (Lampa.Noty) Lampa.Noty.show('Звук трейлера увімкнено');
             } else {
                 sendYTCommand('mute');
                 isMuted = true;
-                if (remoteBadge) remoteBadge.html(ICON_MUTED + '<span>Увімкнути звук</span>');
-                if (soundBtn) soundBtn.html(ICON_MUTED + '<span>Звук: вимк</span>');
+                if (soundBtn) soundBtn.html(ICON_MUTED);
                 if (Lampa.Noty) Lampa.Noty.show('Звук трейлера вимкнено');
             }
         }
 
-        // 1. Плавающий пульт звука в правом нижнем углу (как в оригинале Cardify)
-        var remoteBadge = $('' +
-            '<div class="cinematic-sound-remote selector">' +
-            '    ' + ICON_MUTED +
-            '    <span>Увімкнути звук</span>' +
-            '</div>'
-        );
-        remoteBadge.on('hover:enter click', toggleSound);
-        dom.append(remoteBadge);
-
-        // 2. Кнопка в ряду действий фильма (находим контейнер через главную кнопку Play)
+        // Добавляем аккуратную круглую кнопку звука точно в ряд остальных кнопок фильма
         var soundBtn = null;
-        var playBtn = dom.find('.button--play, .full-start__button:first');
-        if (playBtn && playBtn.length) {
-            var container = playBtn.parent();
-            if (container && container.length) {
-                soundBtn = $('' +
-                    '<div class="full-start__button selector button cinematic-sound-btn">' +
-                    '    ' + ICON_MUTED +
-                    '    <span>Звук: вимк</span>' +
-                    '</div>'
-                );
-                soundBtn.on('hover:enter click', toggleSound);
-                container.append(soundBtn);
-            }
+        var buttonsContainer = dom.find('.full-start__buttons, .buttons--container');
+        if (!buttonsContainer.length) {
+            var anyBtn = dom.find('.button--play, .full-start__button:first');
+            if (anyBtn.length) buttonsContainer = anyBtn.parent();
         }
+
+        if (buttonsContainer && buttonsContainer.length) {
+            soundBtn = $('' +
+                '<div class="full-start__button selector button--sound">' +
+                '    ' + ICON_MUTED +
+                '</div>'
+            );
+
+            soundBtn.on('hover:enter click', function (e) {
+                if (e) e.stopPropagation();
+                toggleSound();
+            });
+
+            buttonsContainer.append(soundBtn);
+        }
+
+        // Дополнительно: нажатие клавиши «Вверх» на пульте также включает/выключает звук
+        var keyHandler = function (e) {
+            if (e.keyCode === 38 || e.code === 'ArrowUp') { // Стрелка вверх
+                toggleSound();
+            }
+        };
+        window.addEventListener('keydown', keyHandler);
 
         var timer = setTimeout(function () {
             layer.addClass('is-visible');
@@ -256,8 +228,8 @@
         var clean = function (e) {
             if (e.type === 'destroy' || e.type === 'back') {
                 clearTimeout(timer);
+                window.removeEventListener('keydown', keyHandler);
                 $('body').removeClass('cinematic-trailer-active');
-                if (remoteBadge) remoteBadge.remove();
                 if (soundBtn) soundBtn.remove();
                 layer.remove();
                 if (bg && bg.length) {
