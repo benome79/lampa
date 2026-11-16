@@ -147,10 +147,10 @@
             '}' +
             '/* 2. ВТОРИЧНЫЕ КНОПКИ: APPLE TV CIRCULAR SATELLITES (Звук, Закладка, Галочка, ...) */' +
             '.full-start__button:not(.button--play):not(.view--play):not(:first-child), .full-start-new__button:not(.button--play):not(.view--play):not(:first-child), .button--sound {' +
-            '    width: 3.2em !important;' +
-            '    height: 3.2em !important;' +
-            '    min-width: 3.2em !important;' +
-            '    max-width: 3.2em !important;' +
+            '    width: 2.8em !important;' +
+            '    height: 2.8em !important;' +
+            '    min-width: 2.8em !important;' +
+            '    max-width: 2.8em !important;' +
             '    border-radius: 50% !important;' +
             '    -webkit-border-radius: 50% !important;' +
             '    display: -webkit-inline-box !important;' +
@@ -163,7 +163,7 @@
             '    -webkit-justify-content: center !important;' +
             '    justify-content: center !important;' +
             '    padding: 0 !important;' +
-            '    margin: 0 0 0 0.7em !important;' +
+            '    margin: 0 0.8em 0 0 !important;' +
             '    background: rgba(255, 255, 255, 0.14) !important;' +
             '    border: 1px solid rgba(255, 255, 255, 0.18) !important;' +
             '    color: #ffffff !important;' +
@@ -172,8 +172,8 @@
             '    -webkit-transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;' +
             '}' +
             '.full-start__button:not(.button--play):not(.view--play):not(:first-child) svg, .full-start-new__button:not(.button--play):not(.view--play):not(:first-child) svg, .button--sound svg {' +
-            '    width: 1.35em !important;' +
-            '    height: 1.35em !important;' +
+            '    width: 1.2em !important;' +
+            '    height: 1.2em !important;' +
             '    margin: 0 !important;' +
             '    fill: currentColor !important;' +
             '    flex-shrink: 0 !important;' +
