@@ -97,13 +97,11 @@
             '    flex-wrap: nowrap !important;' +
             '    margin-top: 1.2em !important;' +
             '}' +
-            '/* Вторичные круглые кнопки (Закладка, Просмотрено, Звук, Троеточие) */' +
-            '.full-start__button:not(.button--play):not(:first-child), .button--sound {' +
-            '    width: 3.2em !important;' +
+            '/* ВСЕ КНОПКИ — ЕДИНЫЕ ГОРИЗОНТАЛЬНЫЕ КАПСУЛЫ */' +
+            '.full-start__button, .button--sound {' +
             '    height: 3.2em !important;' +
-            '    min-width: 3.2em !important;' +
-            '    border-radius: 50% !important;' +
-            '    -webkit-border-radius: 50% !important;' +
+            '    border-radius: 2em !important;' +
+            '    -webkit-border-radius: 2em !important;' +
             '    display: -webkit-inline-box !important;' +
             '    display: -webkit-inline-flex !important;' +
             '    display: inline-flex !important;' +
@@ -113,32 +111,46 @@
             '    -webkit-box-pack: center !important;' +
             '    -webkit-justify-content: center !important;' +
             '    justify-content: center !important;' +
-            '    padding: 0 !important;' +
-            '    margin-left: 0.8em !important;' +
+            '    padding: 0 1.25em !important;' +
+            '    margin: 0 0.5em 0 0 !important;' +
             '    background: rgba(255, 255, 255, 0.12) !important;' +
-            '    border: 1px solid rgba(255, 255, 255, 0.15) !important;' +
+            '    border: 1px solid rgba(255, 255, 255, 0.16) !important;' +
             '    color: #ffffff !important;' +
+            '    font-size: 1em !important;' +
             '    cursor: pointer !important;' +
+            '    white-space: nowrap !important;' +
             '    transition: all 0.2s ease !important;' +
             '    -webkit-transition: all 0.2s ease !important;' +
             '}' +
-            '/* Подсветка кнопок при наведении пульта */' +
-            '.full-start__button:not(.button--play):not(:first-child).focus, .button--sound.focus {' +
-            '    background: #ffffff !important;' +
-            '    color: #0b0b10 !important;' +
-            '    transform: scale(1.1) !important;' +
-            '    -webkit-transform: scale(1.1) !important;' +
-            '    box-shadow: 0 0 16px rgba(255, 255, 255, 0.6) !important;' +
-            '}' +
-            '/* Скрываем текст внутри круглых вторичных кнопок (оставляем только чистые центрированные иконки) */' +
-            '.full-start__button:not(.button--play):not(:first-child) span {' +
-            '    display: none !important;' +
-            '}' +
-            '.full-start__button:not(.button--play):not(:first-child) svg, .button--sound svg {' +
-            '    margin: 0 !important;' +
-            '    width: 1.4em !important;' +
-            '    height: 1.4em !important;' +
+            '.full-start__button svg, .button--sound svg {' +
+            '    width: 1.3em !important;' +
+            '    height: 1.3em !important;' +
+            '    margin-right: 0.55em !important;' +
             '    fill: currentColor !important;' +
+            '    flex-shrink: 0 !important;' +
+            '}' +
+            '.full-start__button span, .button--sound span {' +
+            '    display: inline-block !important;' +
+            '    font-size: 1.05em !important;' +
+            '    font-weight: 500 !important;' +
+            '    letter-spacing: 0.015em !important;' +
+            '    color: inherit !important;' +
+            '}' +
+            '/* ПОДСВЕТКА ЛЮБОЙ КАПСУЛЫ ПРИ НАВЕДЕНИИ С ПУЛЬТА ТВ */' +
+            '.full-start__button.focus, .button--sound.focus {' +
+            '    background: #ffffff !important;' +
+            '    border-color: #ffffff !important;' +
+            '    color: #0b0b10 !important;' +
+            '    transform: scale(1.05) !important;' +
+            '    -webkit-transform: scale(1.05) !important;' +
+            '    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 18px rgba(255, 255, 255, 0.55) !important;' +
+            '}' +
+            '.full-start__button.focus svg, .button--sound.focus svg {' +
+            '    fill: #0b0b10 !important;' +
+            '}' +
+            '.full-start__button.focus span, .button--sound.focus span {' +
+            '    color: #0b0b10 !important;' +
+            '    font-weight: 600 !important;' +
             '}' +
             '/* КОМПАКТНОЕ ПАРЯЩЕЕ УВЕДОМЛЕНИЕ-КАПСУЛА */' +
             '.noty {' +
@@ -380,12 +392,12 @@
                 sendYTCommand('unMute');
                 sendYTCommand('setVolume', [85]);
                 isMuted = false;
-                if (soundBtn) soundBtn.html(ICON_UNMUTED);
+                if (soundBtn) soundBtn.html(ICON_UNMUTED + '<span>Звук</span>');
                 if (Lampa.Noty) Lampa.Noty.show('Звук трейлера увімкнено');
             } else {
                 sendYTCommand('mute');
                 isMuted = true;
-                if (soundBtn) soundBtn.html(ICON_MUTED);
+                if (soundBtn) soundBtn.html(ICON_MUTED + '<span>Звук</span>');
                 if (Lampa.Noty) Lampa.Noty.show('Звук трейлера вимкнено');
             }
         }
@@ -409,11 +421,18 @@
                 }
             });
 
+            // Добавляем текст для кнопки "Еще" (...), если его нет
+            var moreBtn = buttonsContainer.find('.button--more, .view--more');
+            if (moreBtn.length && !moreBtn.find('span').length) {
+                moreBtn.append('<span>Ще</span>');
+            }
+
             buttonsContainer.find('.button--sound').remove();
 
             soundBtn = $('' +
                 '<div class="full-start__button selector button--sound">' +
                 '    ' + ICON_MUTED +
+                '    <span>Звук</span>' +
                 '</div>'
             );
 
