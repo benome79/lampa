@@ -130,7 +130,12 @@
             '    -webkit-transform: scale(1.1) !important;' +
             '    box-shadow: 0 0 16px rgba(255, 255, 255, 0.6) !important;' +
             '}' +
-            '.full-start__button svg, .button--sound svg {' +
+            '/* Скрываем текст внутри круглых вторичных кнопок (оставляем только чистые центрированные иконки) */' +
+            '.full-start__button:not(.button--play):not(:first-child) span {' +
+            '    display: none !important;' +
+            '}' +
+            '.full-start__button:not(.button--play):not(:first-child) svg, .button--sound svg {' +
+            '    margin: 0 !important;' +
             '    width: 1.4em !important;' +
             '    height: 1.4em !important;' +
             '    fill: currentColor !important;' +
