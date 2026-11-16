@@ -8,18 +8,18 @@
         return window.$ || (window.Lampa && window.Lampa.$);
     }
 
-    // 1. Стили видеофона, кнопок и компактных тост-уведомлений
+    // 1. Премиальные стили: Кино-виньетка, парящий постер, чистые кнопки и скрытие стрелок YouTube
     function injectStyles() {
         if (document.getElementById(CSS_ID)) return;
 
         var css = '' +
-            '/* Полупрозрачная шапка */' +
+            '/* Прозрачная верхняя панель */' +
             '.cinematic-trailer-active .head {' +
             '    background: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0.6)), to(transparent)) !important;' +
             '    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%) !important;' +
             '    box-shadow: none !important;' +
             '}' +
-            '/* Контейнер видео-трейлера */' +
+            '/* Полноэкранный слой видео-трейлера */' +
             '.cinematic-trailer-layer {' +
             '    position: fixed !important;' +
             '    top: 0 !important;' +
@@ -28,6 +28,7 @@
             '    height: 100vh !important;' +
             '    overflow: hidden !important;' +
             '    pointer-events: none !important;' +
+            '    user-select: none !important;' +
             '    z-index: 0 !important;' +
             '    opacity: 0;' +
             '    background-color: #000000 !important;' +
@@ -36,7 +37,7 @@
             '.cinematic-trailer-layer.is-visible {' +
             '    opacity: 1 !important;' +
             '}' +
-            '/* Зум для скрытия рамок 21:9 */' +
+            '/* Растягивание видео со скрытием рамок и интерфейса YouTube */' +
             '.cinematic-trailer-layer iframe {' +
             '    position: absolute !important;' +
             '    top: 50% !important;' +
@@ -45,18 +46,22 @@
             '    height: 56.25vw !important;' +
             '    min-height: 100vh !important;' +
             '    min-width: 177.77vh !important;' +
-            '    -webkit-transform: translate(-50%, -50%) scale(1.18) !important;' +
-            '    transform: translate(-50%, -50%) scale(1.18) !important;' +
+            '    -webkit-transform: translate(-50%, -50%) scale(1.22) !important;' +
+            '    transform: translate(-50%, -50%) scale(1.22) !important;' +
             '    border: none !important;' +
+            '    pointer-events: none !important;' +
             '}' +
-            '/* Градиент затемнения */' +
+            '/* КИНОТЕАТРАЛЬНЫЙ ГРАДИЕНТ (СЛЕВА НАПРАВО + СНИЗУ ВВЕРХ) */' +
+            '/* Обеспечивает 100% читаемость текста на ярких дневных сценах */' +
             '.cinematic-trailer-overlay {' +
             '    position: absolute !important;' +
             '    top: 0 !important;' +
             '    left: 0 !important;' +
             '    width: 100% !important;' +
             '    height: 100% !important;' +
-            '    background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(10,10,15,0.65) 65%, rgba(10,10,15,0.98) 100%) !important;' +
+            '    background: ' +
+            '        linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.65) 35%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0) 100%), ' +
+            '        linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(10,10,15,0.4) 60%, rgba(10,10,15,0.96) 100%) !important;' +
             '    z-index: 1 !important;' +
             '}' +
             '.full-start, .full-start-new, .activity__body {' +
@@ -66,6 +71,25 @@
             '.full-start__background.trailer-running {' +
             '    opacity: 0 !important;' +
             '    transition: opacity 0.8s ease-in-out !important;' +
+            '}' +
+            '/* ПАРЯЩИЙ ПОСТЕР С ОБЪЕМНОЙ ТЕНЬЮ */' +
+            '.full-start__poster, .full-start-new__poster, .full--poster {' +
+            '    border-radius: 18px !important;' +
+            '    overflow: hidden !important;' +
+            '    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 255, 255, 0.2) !important;' +
+            '}' +
+            '/* НАВОДИМ ПОРЯДОК В КНОПКАХ */' +
+            '/* Скрываем лишние дублирующие строки (Shots, одинокие бейджи) */' +
+            '.full-start__status, .full-start__pg, .view--torrent.hide {' +
+            '    display: none !important;' +
+            '}' +
+            '.full-start__buttons, .buttons--container {' +
+            '    display: -webkit-box !important;' +
+            '    display: -webkit-flex !important;' +
+            '    display: flex !important;' +
+            '    align-items: center !important;' +
+            '    flex-wrap: nowrap !important;' +
+            '    margin-top: 1em !important;' +
             '}' +
             '/* Круглая кнопка звука в нативном стиле Lampa */' +
             '.button--sound {' +
@@ -162,7 +186,7 @@
         var dom = activity.render();
         var bg = dom.find('.full-start__background');
 
-        // Защита от дубликатов: удаляем старый плеер, если он уже существовал
+        // Защита от дубликатов
         dom.find('.cinematic-trailer-layer').remove();
 
         var origin = 'https://lampa.mx';
@@ -170,9 +194,11 @@
             origin = window.location.origin;
         }
 
+        // Параметры YouTube: полное скрытие элементов управления, стрелок перемотки и аннотаций
         var iframeUrl = 'https://www.youtube.com/embed/' + youtubeKey +
             '?autoplay=1&mute=1&controls=0&loop=1&playlist=' + youtubeKey +
             '&playsinline=1&rel=0&showinfo=0&modestbranding=1&enablejsapi=1' +
+            '&disablekb=1&fs=0&iv_load_policy=3' +
             '&origin=' + encodeURIComponent(origin);
 
         var layer = $('' +
@@ -206,7 +232,6 @@
         function toggleSound() {
             if (isMuted) {
                 sendYTCommand('unMute');
-                // 85% громкости предотвращает цифровой клиппинг и хрип динамиков ТВ
                 sendYTCommand('setVolume', [85]);
                 isMuted = false;
                 if (soundBtn) soundBtn.html(ICON_UNMUTED);
@@ -219,7 +244,7 @@
             }
         }
 
-        // Добавляем круглую кнопку звука в ряд действий
+        // Кнопка звука в ряду действий
         var soundBtn = null;
         var buttonsContainer = dom.find('.full-start__buttons, .buttons--container');
         if (!buttonsContainer.length) {
@@ -228,7 +253,6 @@
         }
 
         if (buttonsContainer && buttonsContainer.length) {
-            // Удаляем старую кнопку, если была
             buttonsContainer.find('.button--sound').remove();
 
             soundBtn = $('' +
@@ -245,7 +269,7 @@
             buttonsContainer.append(soundBtn);
         }
 
-        // Горячая клавиша «Вверх» на пульте
+        // Горячая клавиша «Вверх»
         var keyHandler = function (e) {
             if (e.keyCode === 38 || e.code === 'ArrowUp') {
                 toggleSound();
@@ -286,7 +310,6 @@
         injectStyles();
 
         if (Lampa.Listener) {
-            // Запуск СТРОГО по событию complite, чтобы исключить запуск двух плееров одновременно
             Lampa.Listener.follow('full', function (e) {
                 try {
                     if (e.type === 'complite') {
