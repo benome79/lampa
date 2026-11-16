@@ -63,6 +63,7 @@
             '        linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.65) 35%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0) 100%), ' +
             '        linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(10,10,15,0.4) 60%, rgba(10,10,15,0.96) 100%) !important;' +
             '    z-index: 1 !important;' +
+            '    pointer-events: auto !important;' +
             '}' +
             '.full-start, .full-start-new, .activity__body {' +
             '    position: relative !important;' +
@@ -97,6 +98,11 @@
             '    align-items: center !important;' +
             '    justify-content: center !important;' +
             '    cursor: pointer !important;' +
+            '}' +
+            '.button--sound.focus {' +
+            '    background: #ffffff !important;' +
+            '    color: #000000 !important;' +
+            '    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7) !important;' +
             '}' +
             '.button--sound svg {' +
             '    width: 1.4em !important;' +
@@ -194,16 +200,16 @@
             origin = window.location.origin;
         }
 
-        // Параметры YouTube: полное скрытие элементов управления, стрелок перемотки и аннотаций
-        var iframeUrl = 'https://www.youtube.com/embed/' + youtubeKey +
-            '?autoplay=1&mute=1&controls=0&loop=1&playlist=' + youtubeKey +
-            '&playsinline=1&rel=0&showinfo=0&modestbranding=1&enablejsapi=1' +
+        // Параметры YouTube: строго без playlist (убирает стрелки |< и >|), скрытие элементов управления
+        var iframeUrl = 'https://www.youtube-nocookie.com/embed/' + youtubeKey +
+            '?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&showinfo=0&modestbranding=1&enablejsapi=1' +
             '&disablekb=1&fs=0&iv_load_policy=3' +
             '&origin=' + encodeURIComponent(origin);
 
         var layer = $('' +
             '<div class="cinematic-trailer-layer">' +
             '    <iframe src="' + iframeUrl + '" ' +
+            '        tabindex="-1" aria-hidden="true" ' +
             '        referrerpolicy="strict-origin-when-cross-origin" ' +
             '        allow="autoplay; encrypted-media; fullscreen">' +
             '    </iframe>' +
@@ -228,6 +234,18 @@
                 }
             } catch (e) {}
         }
+
+        // Бесшовный повтор видео при окончании (без стрелок плейлиста)
+        var onMessage = function (event) {
+            try {
+                var data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                if (data && data.event === 'onStateChange' && data.info === 0) {
+                    sendYTCommand('seekTo', [0]);
+                    sendYTCommand('playVideo');
+                }
+            } catch (err) {}
+        };
+        window.addEventListener('message', onMessage);
 
         function toggleSound() {
             if (isMuted) {
@@ -261,22 +279,26 @@
                 '</div>'
             );
 
-            soundBtn.on('hover:enter click', function (e) {
-                if (e) e.stopPropagation();
+            // Раздельная регистрация для пульта ТВ (hover:enter) и кликов
+            soundBtn.on('hover:enter', function (e) {
+                if (e && e.stopPropagation) e.stopPropagation();
                 toggleSound();
             });
 
+            soundBtn.on('click', function (e) {
+                if (e && e.stopPropagation) e.stopPropagation();
+                toggleSound();
+            });
+
+            if (soundBtn[0]) {
+                soundBtn[0].onclick = function (e) {
+                    if (e && e.stopPropagation) e.stopPropagation();
+                    toggleSound();
+                };
+            }
+
             buttonsContainer.append(soundBtn);
         }
-
-        // Горячая клавиша «Вверх»
-        var keyHandler = function (e) {
-            if (e.keyCode === 38 || e.code === 'ArrowUp') {
-                toggleSound();
-            }
-        };
-        window.removeEventListener('keydown', keyHandler);
-        window.addEventListener('keydown', keyHandler);
 
         var timer = setTimeout(function () {
             layer.addClass('is-visible');
@@ -288,7 +310,7 @@
         var clean = function (e) {
             if (e.type === 'destroy' || e.type === 'back') {
                 clearTimeout(timer);
-                window.removeEventListener('keydown', keyHandler);
+                window.removeEventListener('message', onMessage);
                 $('body').removeClass('cinematic-trailer-active');
                 if (soundBtn) soundBtn.remove();
                 layer.remove();
