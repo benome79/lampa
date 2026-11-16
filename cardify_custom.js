@@ -81,32 +81,56 @@
             '    overflow: hidden !important;' +
             '    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 255, 255, 0.2) !important;' +
             '}' +
-            '/* НАВОДИМ ПОРЯДОК В КНОПКАХ */' +
-            '/* Скрываем лишние дублирующие строки (Shots, одинокие бейджи) */' +
-            '.full-start__status, .full-start__pg, .view--torrent.hide {' +
+            '/* НАВОДИМ ПОРЯДОК В КНОПКАХ: СКРЫВАЕМ ЛИШНИЕ И ДЕЛАЕМ ЕДИНЫЙ РЯД */' +
+            '/* Скрываем дублирующие строки, Shots, Трейлеры и нижние контейнеры */' +
+            '.full-start__status, .full-start__pg, .view--torrent, .button--shots, .view--shots, .view--trailer, .button--trailer, .buttons--container {' +
             '    display: none !important;' +
             '}' +
-            '.full-start__buttons, .buttons--container {' +
+            '/* Единый горизонтальный ряд кнопок действий */' +
+            '.full-start__buttons, .full-start-new__buttons {' +
             '    display: -webkit-box !important;' +
             '    display: -webkit-flex !important;' +
             '    display: flex !important;' +
+            '    -webkit-box-align: center !important;' +
+            '    -webkit-align-items: center !important;' +
             '    align-items: center !important;' +
             '    flex-wrap: nowrap !important;' +
-            '    margin-top: 1em !important;' +
+            '    margin-top: 1.2em !important;' +
             '}' +
-            '/* Круглая кнопка звука в нативном стиле Lampa */' +
-            '.button--sound {' +
+            '/* Вторичные круглые кнопки (Закладка, Просмотрено, Звук, Троеточие) */' +
+            '.full-start__button:not(.button--play):not(:first-child), .button--sound {' +
+            '    width: 3.2em !important;' +
+            '    height: 3.2em !important;' +
+            '    min-width: 3.2em !important;' +
+            '    border-radius: 50% !important;' +
+            '    -webkit-border-radius: 50% !important;' +
+            '    display: -webkit-inline-box !important;' +
+            '    display: -webkit-inline-flex !important;' +
             '    display: inline-flex !important;' +
+            '    -webkit-box-align: center !important;' +
+            '    -webkit-align-items: center !important;' +
             '    align-items: center !important;' +
+            '    -webkit-box-pack: center !important;' +
+            '    -webkit-justify-content: center !important;' +
             '    justify-content: center !important;' +
+            '    padding: 0 !important;' +
+            '    margin-left: 0.8em !important;' +
+            '    background: rgba(255, 255, 255, 0.12) !important;' +
+            '    border: 1px solid rgba(255, 255, 255, 0.15) !important;' +
+            '    color: #ffffff !important;' +
             '    cursor: pointer !important;' +
+            '    transition: all 0.2s ease !important;' +
+            '    -webkit-transition: all 0.2s ease !important;' +
             '}' +
-            '.button--sound.focus {' +
+            '/* Подсветка кнопок при наведении пульта */' +
+            '.full-start__button:not(.button--play):not(:first-child).focus, .button--sound.focus {' +
             '    background: #ffffff !important;' +
-            '    color: #000000 !important;' +
-            '    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7) !important;' +
+            '    color: #0b0b10 !important;' +
+            '    transform: scale(1.1) !important;' +
+            '    -webkit-transform: scale(1.1) !important;' +
+            '    box-shadow: 0 0 16px rgba(255, 255, 255, 0.6) !important;' +
             '}' +
-            '.button--sound svg {' +
+            '.full-start__button svg, .button--sound svg {' +
             '    width: 1.4em !important;' +
             '    height: 1.4em !important;' +
             '    fill: currentColor !important;' +
@@ -363,7 +387,7 @@
 
         // Кнопка звука в ряду действий
         var soundBtn = null;
-        var buttonsContainer = dom.find('.full-start__buttons, .buttons--container');
+        var buttonsContainer = dom.find('.full-start__buttons, .full-start-new__buttons');
         if (!buttonsContainer.length) {
             var anyBtn = dom.find('.button--play, .full-start__button:first');
             if (anyBtn.length) buttonsContainer = anyBtn.parent();
@@ -396,7 +420,13 @@
                 };
             }
 
-            buttonsContainer.append(soundBtn);
+            // Вставляем перед кнопкой «Еще» (...), чтобы троеточие оставалось последним в ряду
+            var moreBtn = buttonsContainer.find('.button--more, .view--more, .full-start__button:last');
+            if (moreBtn.length && moreBtn[0] !== soundBtn[0]) {
+                soundBtn.insertBefore(moreBtn);
+            } else {
+                buttonsContainer.append(soundBtn);
+            }
         }
 
         var timer = setTimeout(function () {
