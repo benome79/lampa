@@ -8,11 +8,18 @@
         return window.$ || (window.Lampa && window.Lampa.$);
     }
 
-    // 1. Стили видеофона: фиксированный фон на весь экран за карточкой
+    // 1. Стили видеофона: видео на весь экран под самый верх
     function injectStyles() {
         if (document.getElementById(CSS_ID)) return;
 
         var css = '' +
+            '/* Делаем верхнюю панель прозрачной с мягким градиентом, чтобы видео уходило под самый верх */' +
+            '.cinematic-trailer-active .head {' +
+            '    background: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0.6)), to(transparent)) !important;' +
+            '    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%) !important;' +
+            '    box-shadow: none !important;' +
+            '}' +
+            '/* Контейнер видео-трейлера на весь экран */' +
             '.cinematic-trailer-layer {' +
             '    position: fixed !important;' +
             '    top: 0 !important;' +
@@ -29,6 +36,7 @@
             '.cinematic-trailer-layer.is-visible {' +
             '    opacity: 1 !important;' +
             '}' +
+            '/* Зум 1.18x убирает черные рамки у трейлеров формата 21:9 и растягивает видео до краев */' +
             '.cinematic-trailer-layer iframe {' +
             '    position: absolute !important;' +
             '    top: 50% !important;' +
@@ -37,21 +45,20 @@
             '    height: 56.25vw !important;' +
             '    min-height: 100vh !important;' +
             '    min-width: 177.77vh !important;' +
-            '    -webkit-transform: translate(-50%, -50%) !important;' +
-            '    transform: translate(-50%, -50%) !important;' +
+            '    -webkit-transform: translate(-50%, -50%) scale(1.18) !important;' +
+            '    transform: translate(-50%, -50%) scale(1.18) !important;' +
             '    border: none !important;' +
             '}' +
-            '/* Полупрозрачный темный градиент поверх видео */' +
+            '/* Полупрозрачный градиент для читаемости текста */' +
             '.cinematic-trailer-overlay {' +
             '    position: absolute !important;' +
             '    top: 0 !important;' +
             '    left: 0 !important;' +
             '    width: 100% !important;' +
             '    height: 100% !important;' +
-            '    background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(10,10,15,0.7) 60%, rgba(10,10,15,0.96) 100%) !important;' +
+            '    background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(10,10,15,0.65) 65%, rgba(10,10,15,0.98) 100%) !important;' +
             '    z-index: 1 !important;' +
             '}' +
-            '/* Поднимаем контент карточки над видео */' +
             '.full-start, .full-start-new, .activity__body {' +
             '    position: relative !important;' +
             '    z-index: 2 !important;' +
@@ -106,7 +113,7 @@
         return list[0].key;
     }
 
-    // 3. Запуск трейлера (с фиксом ошибки 153)
+    // 3. Запуск трейлера
     function startTrailer(activity, youtubeKey) {
         var $ = get$();
         if (!$ || !activity || !activity.render) return;
@@ -114,7 +121,6 @@
         var dom = activity.render();
         var bg = dom.find('.full-start__background');
 
-        // Фикс ошибки 153: YouTube требует обязательный валидный origin и referer
         var origin = 'https://lampa.mx';
         if (window.location && window.location.origin && window.location.origin.indexOf('http') === 0) {
             origin = window.location.origin;
@@ -137,6 +143,9 @@
         var layer = $(html);
         dom.prepend(layer);
 
+        // Делаем шапку полупрозрачной
+        $('body').addClass('cinematic-trailer-active');
+
         var timer = setTimeout(function () {
             layer.addClass('is-visible');
             if (bg && bg.length) {
@@ -147,6 +156,7 @@
         var clean = function (e) {
             if (e.type === 'destroy' || e.type === 'back') {
                 clearTimeout(timer);
+                $('body').removeClass('cinematic-trailer-active');
                 layer.remove();
                 if (bg && bg.length) {
                     bg.removeClass('trailer-running');
