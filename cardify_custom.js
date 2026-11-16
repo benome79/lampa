@@ -8,7 +8,7 @@
         return window.$ || (window.Lampa && window.Lampa.$);
     }
 
-    // 1. Стили видеофона и круглой кнопки звука в едином стиле Lampa
+    // 1. Стили видеофона, кнопок и премиальных тост-уведомлений
     function injectStyles() {
         if (document.getElementById(CSS_ID)) return;
 
@@ -36,6 +36,7 @@
             '.cinematic-trailer-layer.is-visible {' +
             '    opacity: 1 !important;' +
             '}' +
+            '/* Зум для скрытия рамок 21:9 */' +
             '.cinematic-trailer-layer iframe {' +
             '    position: absolute !important;' +
             '    top: 50% !important;' +
@@ -48,6 +49,7 @@
             '    transform: translate(-50%, -50%) scale(1.18) !important;' +
             '    border: none !important;' +
             '}' +
+            '/* Градиент затемнения */' +
             '.cinematic-trailer-overlay {' +
             '    position: absolute !important;' +
             '    top: 0 !important;' +
@@ -76,6 +78,33 @@
             '    width: 1.4em !important;' +
             '    height: 1.4em !important;' +
             '    fill: currentColor !important;' +
+            '}' +
+            '/* ПРЕМИАЛЬНЫЕ УВЕДОМЛЕНИЯ В СТИЛЕ APPLE TV / GLASSMORPHISM */' +
+            '/* Заменяет стандартную огромную зеленую полосу на компактную парящую капсулу */' +
+            '.noty {' +
+            '    position: fixed !important;' +
+            '    left: 50% !important;' +
+            '    bottom: 2.5em !important;' +
+            '    transform: translateX(-50%) !important;' +
+            '    -webkit-transform: translateX(-50%) !important;' +
+            '    width: auto !important;' +
+            '    min-width: 220px !important;' +
+            '    max-width: 80% !important;' +
+            '    padding: 0.75em 2em !important;' +
+            '    background: rgba(16, 16, 22, 0.88) !important;' +
+            '    color: #ffffff !important;' +
+            '    font-size: 1.15em !important;' +
+            '    font-weight: 500 !important;' +
+            '    letter-spacing: 0.02em !important;' +
+            '    text-align: center !important;' +
+            '    border-radius: 40px !important;' +
+            '    border: 1px solid rgba(255, 255, 255, 0.22) !important;' +
+            '    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75), 0 0 15px rgba(255, 255, 255, 0.08) !important;' +
+            '    backdrop-filter: blur(20px) !important;' +
+            '    -webkit-backdrop-filter: blur(20px) !important;' +
+            '    pointer-events: none !important;' +
+            '    z-index: 99999 !important;' +
+            '    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;' +
             '}';
 
         var style = document.createElement('style');
@@ -187,7 +216,7 @@
             }
         }
 
-        // Добавляем аккуратную круглую кнопку звука точно в ряд остальных кнопок фильма
+        // Добавляем круглую кнопку звука
         var soundBtn = null;
         var buttonsContainer = dom.find('.full-start__buttons, .buttons--container');
         if (!buttonsContainer.length) {
@@ -210,9 +239,9 @@
             buttonsContainer.append(soundBtn);
         }
 
-        // Дополнительно: нажатие клавиши «Вверх» на пульте также включает/выключает звук
+        // Горячая клавиша «Вверх» на пульте
         var keyHandler = function (e) {
-            if (e.keyCode === 38 || e.code === 'ArrowUp') { // Стрелка вверх
+            if (e.keyCode === 38 || e.code === 'ArrowUp') {
                 toggleSound();
             }
         };
@@ -263,10 +292,6 @@
                     console.error('Cinematic trailer error:', err);
                 }
             });
-        }
-
-        if (Lampa.Noty) {
-            Lampa.Noty.show('Кинематографичные карточки подключены!');
         }
     }
 
