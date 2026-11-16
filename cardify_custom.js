@@ -82,8 +82,8 @@
             '    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 255, 255, 0.2) !important;' +
             '}' +
             '/* НАВОДИМ ПОРЯДОК В КНОПКАХ: СКРЫВАЕМ ЛИШНИЕ И ДЕЛАЕМ ЕДИНЫЙ РЯД */' +
-            '/* Скрываем дублирующие строки, Shots, Трейлеры и нижние контейнеры */' +
-            '.full-start__status, .full-start__pg, .view--torrent, .button--shots, .view--shots, .view--trailer, .button--trailer, .buttons--container {' +
+            '/* Скрываем дублирующие строки, Shots, Трейлеры, Колокольчик (подписки) и нижние контейнеры */' +
+            '.full-start__status, .full-start__pg, .view--torrent, .button--shots, .view--shots, .view--trailer, .button--trailer, .view--subs, .button--subs, .view--subscribe, .button--subscribe, .button--notice, .view--notice, .view--bell, .button--bell, .buttons--container {' +
             '    display: none !important;' +
             '}' +
             '/* Единый горизонтальный ряд кнопок действий */' +
@@ -399,6 +399,16 @@
         }
 
         if (buttonsContainer && buttonsContainer.length) {
+            // Удаляем кнопку колокольчика (подписки на серии)
+            buttonsContainer.find('.view--subs, .button--subs, .view--subscribe, .button--subscribe, .button--notice, .view--notice, .view--bell, .button--bell').remove();
+            buttonsContainer.find('.full-start__button').each(function () {
+                var b = $(this);
+                var html = b.html() || '';
+                if (html.indexOf('M12 22') !== -1 || html.indexOf('M18 16') !== -1 || html.indexOf('bell') !== -1 || html.indexOf('Підпис') !== -1 || html.indexOf('Подпис') !== -1) {
+                    b.remove();
+                }
+            });
+
             buttonsContainer.find('.button--sound').remove();
 
             soundBtn = $('' +
@@ -425,12 +435,12 @@
                 };
             }
 
-            // Вставляем перед кнопкой «Еще» (...), чтобы троеточие оставалось последним в ряду
-            var moreBtn = buttonsContainer.find('.button--more, .view--more, .full-start__button:last');
-            if (moreBtn.length && moreBtn[0] !== soundBtn[0]) {
-                soundBtn.insertBefore(moreBtn);
+            // Ставим кнопку звука СРАЗУ ПОСЛЕ кнопки «Дивитись» (и ПЕРЕД закладками)
+            var playBtn = buttonsContainer.find('.button--play, .view--play, .full-start__button:first');
+            if (playBtn.length) {
+                soundBtn.insertAfter(playBtn);
             } else {
-                buttonsContainer.append(soundBtn);
+                buttonsContainer.prepend(soundBtn);
             }
         }
 
