@@ -137,56 +137,54 @@
             '    z-index: 99999 !important;' +
             '    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;' +
             '}' +
-            '/* СТИЛЬ ЛЕВОГО МЕНЮ: APPLE TV FROSTED GLASS */' +
+            '/* СТИЛЬ ЛЕВОГО МЕНЮ: КИНОТЕАТРАЛЬНЫЙ ГРАДИЕНТ И ЧЕТКАЯ ПЛАШКА */' +
             '.wrap__left {' +
-            '    background: rgba(12, 12, 18, 0.78) !important;' +
-            '    backdrop-filter: blur(28px) !important;' +
-            '    -webkit-backdrop-filter: blur(28px) !important;' +
+            '    background: linear-gradient(to right, rgba(10, 10, 14, 0.96) 0%, rgba(10, 10, 14, 0.88) 80%, rgba(10, 10, 14, 0.5) 100%) !important;' +
+            '    backdrop-filter: blur(20px) !important;' +
+            '    -webkit-backdrop-filter: blur(20px) !important;' +
             '    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;' +
-            '    box-shadow: 12px 0 40px rgba(0, 0, 0, 0.65) !important;' +
+            '    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.6) !important;' +
+            '}' +
+            'body.menu--open .wrap__left, body.menu--always.menu--open .wrap__left > .scroll {' +
+            '    width: 17em !important;' +
             '}' +
             '.wrap__left > .scroll, .menu {' +
             '    background: transparent !important;' +
             '}' +
             '.menu__item {' +
-            '    margin: 0.25em 0.8em !important;' +
-            '    padding: 0.75em 1.2em !important;' +
             '    border-radius: 14px !important;' +
             '    -webkit-border-radius: 14px !important;' +
             '    background: transparent !important;' +
-            '    color: rgba(255, 255, 255, 0.75) !important;' +
-            '    border: 1px solid transparent !important;' +
-            '    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;' +
-            '    -webkit-transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;' +
+            '    color: rgba(255, 255, 255, 0.85) !important;' +
+            '    transition: all 0.2s ease !important;' +
+            '    -webkit-transition: all 0.2s ease !important;' +
             '}' +
             '.menu__item .menu__ico {' +
-            '    opacity: 0.85 !important;' +
-            '    transition: transform 0.22s ease, opacity 0.22s ease !important;' +
-            '    -webkit-transition: -webkit-transform 0.22s ease, opacity 0.22s ease !important;' +
+            '    opacity: 0.9 !important;' +
+            '    transition: transform 0.2s ease !important;' +
+            '    -webkit-transition: -webkit-transform 0.2s ease !important;' +
             '}' +
             '.menu__item .menu__text {' +
             '    font-weight: 400 !important;' +
-            '    color: rgba(255, 255, 255, 0.85) !important;' +
+            '    color: rgba(255, 255, 255, 0.88) !important;' +
             '    letter-spacing: 0.015em !important;' +
+            '    white-space: nowrap !important;' +
             '}' +
-            '/* АКТИВНЫЙ ПУНКТ МЕНЮ (FROSTED GLASS PILL) */' +
+            '/* АКТИВНЫЙ ПУНКТ МЕНЮ: КОНТРАСТНАЯ ЧЕТКАЯ ПЛАШКА */' +
             '.menu__item.focus {' +
-            '    background: rgba(255, 255, 255, 0.18) !important;' +
-            '    border: 1px solid rgba(255, 255, 255, 0.38) !important;' +
-            '    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 15px rgba(255, 255, 255, 0.12) !important;' +
-            '    color: #ffffff !important;' +
-            '    transform: scale(1.04) !important;' +
-            '    -webkit-transform: scale(1.04) !important;' +
+            '    background: #ffffff !important;' +
+            '    color: #0b0b10 !important;' +
+            '    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 255, 255, 0.4) !important;' +
             '}' +
             '.menu__item.focus .menu__ico {' +
             '    opacity: 1 !important;' +
-            '    transform: scale(1.12) !important;' +
-            '    -webkit-transform: scale(1.12) !important;' +
-            '    color: #ffffff !important;' +
+            '    color: #0b0b10 !important;' +
+            '    transform: scale(1.08) !important;' +
+            '    -webkit-transform: scale(1.08) !important;' +
             '}' +
             '.menu__item.focus .menu__text {' +
-            '    color: #ffffff !important;' +
-            '    font-weight: 500 !important;' +
+            '    color: #0b0b10 !important;' +
+            '    font-weight: 600 !important;' +
             '}' +
             '.menu__split {' +
             '    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;' +
