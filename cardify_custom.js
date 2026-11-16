@@ -83,7 +83,7 @@
             '}' +
             '/* НАВОДИМ ПОРЯДОК В КНОПКАХ: СКРЫВАЕМ ЛИШНИЕ И ДЕЛАЕМ ЕДИНЫЙ РЯД */' +
             '/* Скрываем дублирующие строки, Shots, Трейлеры, Колокольчик (подписки) и нижние контейнеры */' +
-            '.full-start__status, .full-start__pg, .view--torrent, .button--shots, .view--shots, .view--trailer, .button--trailer, .view--subs, .button--subs, .view--subscribe, .button--subscribe, .button--notice, .view--notice, .view--bell, .button--bell, .buttons--container {' +
+            '.full-start__status, .full-start__pg, .view--torrent, .button--shots, .view--shots, .view--trailer, .button--trailer, .view--subs, .button--subs, .view--sub, .view--subscribe, .button--subscribe, .button--notice, .view--notice, .view--bell, .button--bell, .button--notification, .view--notification, .buttons--container {' +
             '    display: none !important;' +
             '}' +
             '/* Единый горизонтальный ряд кнопок действий */' +
@@ -97,8 +97,10 @@
             '    flex-wrap: nowrap !important;' +
             '    margin-top: 1.2em !important;' +
             '}' +
-            '/* ВСЕ КНОПКИ — ЕДИНЫЕ ГОРИЗОНТАЛЬНЫЕ КАПСУЛЫ */' +
-            '.full-start__button, .button--sound {' +
+            '/* 1. ГЛАВНАЯ КНОПКА: APPLE TV PRIMARY PILL (Смотреть) */' +
+            '.full-start__button:first-child, .full-start-new__button:first-child, .button--play, .view--play {' +
+            '    width: auto !important;' +
+            '    min-width: 9.5em !important;' +
             '    height: 3.2em !important;' +
             '    border-radius: 2em !important;' +
             '    -webkit-border-radius: 2em !important;' +
@@ -111,46 +113,85 @@
             '    -webkit-box-pack: center !important;' +
             '    -webkit-justify-content: center !important;' +
             '    justify-content: center !important;' +
-            '    padding: 0 1.25em !important;' +
-            '    margin: 0 0.5em 0 0 !important;' +
-            '    background: rgba(255, 255, 255, 0.12) !important;' +
-            '    border: 1px solid rgba(255, 255, 255, 0.16) !important;' +
-            '    color: #ffffff !important;' +
+            '    padding: 0 1.6em !important;' +
+            '    margin: 0 0.8em 0 0 !important;' +
+            '    background: rgba(255, 255, 255, 0.92) !important;' +
+            '    border: 1px solid rgba(255, 255, 255, 1) !important;' +
+            '    color: #0b0b10 !important;' +
             '    font-size: 1em !important;' +
             '    cursor: pointer !important;' +
             '    white-space: nowrap !important;' +
-            '    transition: all 0.2s ease !important;' +
-            '    -webkit-transition: all 0.2s ease !important;' +
+            '    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;' +
+            '    -webkit-transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;' +
+            '    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35) !important;' +
             '}' +
-            '.full-start__button svg, .button--sound svg {' +
+            '.full-start__button:first-child svg, .full-start-new__button:first-child svg, .button--play svg, .view--play svg {' +
             '    width: 1.3em !important;' +
             '    height: 1.3em !important;' +
-            '    margin-right: 0.55em !important;' +
+            '    margin-right: 0.6em !important;' +
+            '    fill: #0b0b10 !important;' +
+            '    flex-shrink: 0 !important;' +
+            '}' +
+            '.full-start__button:first-child span, .full-start-new__button:first-child span, .button--play span, .view--play span {' +
+            '    display: inline-block !important;' +
+            '    font-size: 1.05em !important;' +
+            '    font-weight: 600 !important;' +
+            '    letter-spacing: 0.015em !important;' +
+            '    color: #0b0b10 !important;' +
+            '}' +
+            '.full-start__button:first-child.focus, .full-start-new__button:first-child.focus, .button--play.focus, .view--play.focus {' +
+            '    background: #ffffff !important;' +
+            '    transform: scale(1.06) !important;' +
+            '    -webkit-transform: scale(1.06) !important;' +
+            '    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.75) !important;' +
+            '}' +
+            '/* 2. ВТОРИЧНЫЕ КНОПКИ: APPLE TV CIRCULAR SATELLITES (Звук, Закладка, Галочка, ...) */' +
+            '.full-start__button:not(.button--play):not(.view--play):not(:first-child), .full-start-new__button:not(.button--play):not(.view--play):not(:first-child), .button--sound {' +
+            '    width: 3.2em !important;' +
+            '    height: 3.2em !important;' +
+            '    min-width: 3.2em !important;' +
+            '    max-width: 3.2em !important;' +
+            '    border-radius: 50% !important;' +
+            '    -webkit-border-radius: 50% !important;' +
+            '    display: -webkit-inline-box !important;' +
+            '    display: -webkit-inline-flex !important;' +
+            '    display: inline-flex !important;' +
+            '    -webkit-box-align: center !important;' +
+            '    -webkit-align-items: center !important;' +
+            '    align-items: center !important;' +
+            '    -webkit-box-pack: center !important;' +
+            '    -webkit-justify-content: center !important;' +
+            '    justify-content: center !important;' +
+            '    padding: 0 !important;' +
+            '    margin: 0 0 0 0.7em !important;' +
+            '    background: rgba(255, 255, 255, 0.14) !important;' +
+            '    border: 1px solid rgba(255, 255, 255, 0.18) !important;' +
+            '    color: #ffffff !important;' +
+            '    cursor: pointer !important;' +
+            '    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;' +
+            '    -webkit-transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;' +
+            '}' +
+            '.full-start__button:not(.button--play):not(.view--play):not(:first-child) svg, .full-start-new__button:not(.button--play):not(.view--play):not(:first-child) svg, .button--sound svg {' +
+            '    width: 1.35em !important;' +
+            '    height: 1.35em !important;' +
+            '    margin: 0 !important;' +
             '    fill: currentColor !important;' +
             '    flex-shrink: 0 !important;' +
             '}' +
-            '.full-start__button span, .button--sound span {' +
-            '    display: inline-block !important;' +
-            '    font-size: 1.05em !important;' +
-            '    font-weight: 500 !important;' +
-            '    letter-spacing: 0.015em !important;' +
-            '    color: inherit !important;' +
+            '/* Скрываем текст внутри круглых спутников ВСЕГДА (и в обычном состоянии, и при фокусе) */' +
+            '.full-start__button:not(.button--play):not(.view--play):not(:first-child) span, .full-start__button:not(.button--play):not(.view--play):not(:first-child).focus span, .full-start-new__button:not(.button--play):not(.view--play):not(:first-child) span, .full-start-new__button:not(.button--play):not(.view--play):not(:first-child).focus span, .button--sound span, .button--sound.focus span {' +
+            '    display: none !important;' +
             '}' +
-            '/* ПОДСВЕТКА ЛЮБОЙ КАПСУЛЫ ПРИ НАВЕДЕНИИ С ПУЛЬТА ТВ */' +
-            '.full-start__button.focus, .button--sound.focus {' +
+            '/* Подсветка круглых спутников при наведении пульта */' +
+            '.full-start__button:not(.button--play):not(.view--play):not(:first-child).focus, .full-start-new__button:not(.button--play):not(.view--play):not(:first-child).focus, .button--sound.focus {' +
             '    background: #ffffff !important;' +
-            '    border-color: #ffffff !important;' +
             '    color: #0b0b10 !important;' +
-            '    transform: scale(1.05) !important;' +
-            '    -webkit-transform: scale(1.05) !important;' +
-            '    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 18px rgba(255, 255, 255, 0.55) !important;' +
+            '    transform: scale(1.1) !important;' +
+            '    -webkit-transform: scale(1.1) !important;' +
+            '    box-shadow: 0 0 18px rgba(255, 255, 255, 0.65) !important;' +
             '}' +
-            '.full-start__button.focus svg, .button--sound.focus svg {' +
+            '.full-start__button:not(.button--play):not(.view--play):not(:first-child).focus svg, .full-start-new__button:not(.button--play):not(.view--play):not(:first-child).focus svg, .button--sound.focus svg {' +
             '    fill: #0b0b10 !important;' +
-            '}' +
-            '.full-start__button.focus span, .button--sound.focus span {' +
-            '    color: #0b0b10 !important;' +
-            '    font-weight: 600 !important;' +
             '}' +
             '/* КОМПАКТНОЕ ПАРЯЩЕЕ УВЕДОМЛЕНИЕ-КАПСУЛА */' +
             '.noty {' +
@@ -392,12 +433,12 @@
                 sendYTCommand('unMute');
                 sendYTCommand('setVolume', [85]);
                 isMuted = false;
-                if (soundBtn) soundBtn.html(ICON_UNMUTED + '<span>Звук</span>');
+                if (soundBtn) soundBtn.html(ICON_UNMUTED);
                 if (Lampa.Noty) Lampa.Noty.show('Звук трейлера увімкнено');
             } else {
                 sendYTCommand('mute');
                 isMuted = true;
-                if (soundBtn) soundBtn.html(ICON_MUTED + '<span>Звук</span>');
+                if (soundBtn) soundBtn.html(ICON_MUTED);
                 if (Lampa.Noty) Lampa.Noty.show('Звук трейлера вимкнено');
             }
         }
@@ -412,27 +453,20 @@
 
         if (buttonsContainer && buttonsContainer.length) {
             // Удаляем кнопку колокольчика (подписки на серии)
-            buttonsContainer.find('.view--subs, .button--subs, .view--subscribe, .button--subscribe, .button--notice, .view--notice, .view--bell, .button--bell').remove();
-            buttonsContainer.find('.full-start__button').each(function () {
+            buttonsContainer.find('.view--subs, .button--subs, .view--sub, .view--subscribe, .button--subscribe, .button--notice, .view--notice, .view--bell, .button--bell, .button--notification, .view--notification').remove();
+            buttonsContainer.find('.full-start__button, .full-start-new__button').each(function () {
                 var b = $(this);
                 var html = b.html() || '';
-                if (html.indexOf('M12 22') !== -1 || html.indexOf('M18 16') !== -1 || html.indexOf('bell') !== -1 || html.indexOf('Підпис') !== -1 || html.indexOf('Подпис') !== -1) {
+                if (html.indexOf('M12 22') !== -1 || html.indexOf('M18 16') !== -1 || html.indexOf('bell') !== -1 || html.indexOf('notify') !== -1 || html.indexOf('Підпис') !== -1 || html.indexOf('Подпис') !== -1 || html.indexOf('Сповіщ') !== -1 || html.indexOf('Уведомл') !== -1) {
                     b.remove();
                 }
             });
-
-            // Добавляем текст для кнопки "Еще" (...), если его нет
-            var moreBtn = buttonsContainer.find('.button--more, .view--more');
-            if (moreBtn.length && !moreBtn.find('span').length) {
-                moreBtn.append('<span>Ще</span>');
-            }
 
             buttonsContainer.find('.button--sound').remove();
 
             soundBtn = $('' +
                 '<div class="full-start__button selector button--sound">' +
                 '    ' + ICON_MUTED +
-                '    <span>Звук</span>' +
                 '</div>'
             );
 
