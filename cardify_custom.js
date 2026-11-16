@@ -69,9 +69,11 @@
             '    position: relative !important;' +
             '    z-index: 2 !important;' +
             '}' +
+            '.full-start__background {' +
+            '    transition: opacity 1s ease-in-out !important;' +
+            '}' +
             '.full-start__background.trailer-running {' +
             '    opacity: 0 !important;' +
-            '    transition: opacity 0.8s ease-in-out !important;' +
             '}' +
             '/* ПАРЯЩИЙ ПОСТЕР С ОБЪЕМНОЙ ТЕНЬЮ */' +
             '.full-start__poster, .full-start-new__poster, .full--poster {' +
@@ -290,13 +292,57 @@
             } catch (e) {}
         }
 
-        // Бесшовный повтор видео при окончании (без стрелок плейлиста)
+        var hasEnded = false;
+
+        function endTrailer() {
+            if (hasEnded) return;
+            hasEnded = true;
+
+            // Плавное возвращение к оригинальному постеру (кинематографичный fade-out)
+            layer.removeClass('is-visible');
+            if (bg && bg.length) {
+                bg.removeClass('trailer-running');
+            }
+            $('body').removeClass('cinematic-trailer-active');
+
+            if (soundBtn) {
+                soundBtn.remove();
+            }
+
+            setTimeout(function () {
+                layer.remove();
+            }, 1200);
+        }
+
+        // Подключаем handshake с YouTube IFrame API
+        if (iframeEl) {
+            iframeEl.onload = function () {
+                try {
+                    if (iframeEl.contentWindow) {
+                        iframeEl.contentWindow.postMessage(JSON.stringify({
+                            event: 'listening'
+                        }), '*');
+                    }
+                } catch (e) {}
+            };
+        }
+
+        // Слушатель завершения воспроизведения трейлера
         var onMessage = function (event) {
             try {
                 var data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-                if (data && data.event === 'onStateChange' && data.info === 0) {
-                    sendYTCommand('seekTo', [0]);
-                    sendYTCommand('playVideo');
+                if (!data) return;
+
+                var state = null;
+                if (data.event === 'infoDelivery' && data.info && data.info.playerState !== undefined) {
+                    state = data.info.playerState;
+                } else if (data.event === 'onStateChange') {
+                    state = data.info;
+                }
+
+                // 0 = YT.PlayerState.ENDED (трейлер закончился)
+                if (state === 0) {
+                    endTrailer();
                 }
             } catch (err) {}
         };
